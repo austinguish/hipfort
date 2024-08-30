@@ -37,7 +37,7 @@ message("-- HIPFORT_VERSION:        ${HIPFORT_VERSION}")
 message("-- HIPFORT ----------------------------------------------")
 
 set(CMAKE_Fortran_COMPILER_INIT ${HIPFORT_COMPILER})
-PROJECT(hipfort Fortran C CXX) # hip-config.cmake requires CXX enabled
+PROJECT(hipfort Fortran C)
 
 SET(CMAKE_BUILD_TYPE ${HIPFORT_BUILD_TYPE})
 SET(VERSION ${HIPFORT_VERSION})
@@ -56,6 +56,8 @@ ENDIF(NOT FortranCInterface_VERIFIED_C)
 IF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
   MESSAGE(FATAL_ERROR "Fortran compiler does not support F90")
 ENDIF(NOT CMAKE_Fortran_COMPILER_SUPPORTS_F90)
+
+set(CMAKE_Fortran_COMPILER_SUPPORTS_F08 0)
 
 # Test for Fortran 08 support by using an f08-specific construct.
 IF(NOT DEFINED CMAKE_Fortran_COMPILER_SUPPORTS_F08)
@@ -111,9 +113,9 @@ IF(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${HIPFORT_COMPILER_FLAGS}")
 ELSE(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
 IF(CMAKE_Fortran_COMPILER_SUPPORTS_F08)
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${HIPFORT_COMPILER_FLAGS} -std=f2008")
+#  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${HIPFORT_COMPILER_FLAGS} -std=f2008")
 ELSE(CMAKE_Fortran_COMPILER_SUPPORTS_F08)
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${HIPFORT_COMPILER_FLAGS} -std=f2003")
+#  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${HIPFORT_COMPILER_FLAGS} -std=f2003")
 ENDIF(CMAKE_Fortran_COMPILER_SUPPORTS_F08)
 ENDIF(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
  
@@ -127,11 +129,6 @@ IF(FCNAME STREQUAL "pgf90")
     UNSET(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS)
 ENDIF(FCNAME STREQUAL "pgf90")
 
-option(BUILD_TESTING "Build tests" OFF)
-if(BUILD_TESTING)
-  enable_testing()
-endif()
-
 # Subdirectories and packaging
 # NOTE: rocm-cmake must be be included before
 # adding subdirectories.
@@ -141,8 +138,8 @@ ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/lib)
 ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/test)
 ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/bin)
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "hip-runtime-amd (>= 4.5.0)")
-set(CPACK_RPM_PACKAGE_REQUIRES "hip-runtime-amd >= 4.5.0")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "hip-rocclr (>= 3.5.0)")
+set(CPACK_RPM_PACKAGE_REQUIRES "hip-rocclr >= 3.5.0")
 # Package name changed from hipfort to hipfort-devel/dev
 # Backward compatibility support for old package name
 set(CPACK_DEBIAN_PACKAGE_PROVIDES "hipfort")
@@ -162,8 +159,8 @@ set(CPACK_RPM_SPEC_INSTALL_POST "/bin/true")
 
 rocm_create_package(
   NAME hipfort
-  DESCRIPTION "Fortran Interface For GPU Kernel Libraries"
-  MAINTAINER "Hipfort maintainer <hipfort-maintainer@amd.com>"
+  DESCRIPTION "hipfort: Fortran Interface For GPU Kernel Libraries"
+  MAINTAINER "Gregory Rogers <Gregory.Rodgers@amd.com>"
   HEADER_ONLY # Enabled For generating Only -devel pkg.
 )
 
